@@ -27,4 +27,7 @@ public class WmNewsController {
     public ResponseResult submit(@RequestBody WmNewsDto dto){
         return wmNewsService.submit(dto);
     }
+
+    //第一次修改
+
 }
