@@ -10,9 +10,11 @@ import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.dtos.WmMaterialDto;
 import com.heima.model.wemedia.pojos.WmMaterial;
+import com.heima.model.wemedia.pojos.WmNewsMaterial;
 import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.utils.thread.WmThreadLocalUtil;
 import com.heima.wemedia.mapper.WmMaterialMapper;
+import com.heima.wemedia.mapper.WmNewsMaterialMapper;
 import com.heima.wemedia.service.WmMaterialService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -31,6 +32,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
 
     @Autowired
     private FileStorageService fileStorageService;
+
 
     @Override
     public ResponseResult upload_picture(MultipartFile multipartFile) {
@@ -91,4 +93,6 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         responseResult.setData(page.getRecords());
         return responseResult;
     }
+
+
 }
