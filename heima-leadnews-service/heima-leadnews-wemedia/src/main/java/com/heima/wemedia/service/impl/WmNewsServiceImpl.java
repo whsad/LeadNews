@@ -153,6 +153,31 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewMapper, WmNews> implemen
     }
 
     /**
+     * 文章删除
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult delNews(Integer id) {
+        if (id == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "文章id不可缺少");
+        }
+        WmNews wmNews = getById(id);
+        if (wmNews == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST, "文章不存在");
+        }
+
+        if (wmNews.getStatus().equals(WmNews.Status.PUBLISHED)){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        //删除文章与图片的关系
+        wmNewsMaterialMapper.delete(Wrappers.<WmNewsMaterial>lambdaQuery().eq(WmNewsMaterial::getNewsId, wmNews.getId()));
+        //删除文章
+        removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    /**
      * 第一个功能：如果当前封面类型为自动，则设置封面类型的数据
      * 匹配规则：
      * 1.如果内容图片大于等于1，小于3 单图 type1
