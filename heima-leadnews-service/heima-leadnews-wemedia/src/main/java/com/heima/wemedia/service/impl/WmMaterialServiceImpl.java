@@ -1,7 +1,12 @@
 package com.heima.wemedia.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.injector.methods.SelectById;
+import com.baomidou.mybatisplus.core.injector.methods.SelectOne;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.file.service.FileStorageService;
@@ -23,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -32,6 +38,9 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private WmNewsMaterialMapper wmNewsMaterialMapper;
 
 
     @Override
@@ -92,6 +101,29 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         PageResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(page.getRecords());
         return responseResult;
+    }
+
+    /**
+     * 图片删除
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult deleteById(Integer id) {
+        if (id == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        WmMaterial material = getById(id);
+        if (material == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        //查询图片素材是否被引用
+        List<WmNewsMaterial> wmNewsMaterial = wmNewsMaterialMapper.selectList(Wrappers.<WmNewsMaterial>lambdaQuery().eq(WmNewsMaterial::getMaterialId, id));
+        if (wmNewsMaterial.size() > 0){
+            return ResponseResult.errorResult(501, "该素材已在图文中引用, 无法删除");
+        }
+        removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
 

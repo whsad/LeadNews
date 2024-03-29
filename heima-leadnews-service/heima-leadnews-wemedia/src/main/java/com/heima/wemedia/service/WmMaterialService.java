@@ -13,4 +13,5 @@ public interface WmMaterialService extends IService<WmMaterial> {
     ResponseResult search_list(WmMaterialDto dto);
 
 
+    ResponseResult deleteById(Integer id);
 }

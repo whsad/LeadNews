@@ -22,4 +22,9 @@ public class WmMaterialController {
     public ResponseResult search_list(WmMaterialDto dto){
         return wmMaterialService.search_list(dto);
     }
+
+    @GetMapping("/del_picture/{id}")
+    public ResponseResult del_picture(@PathVariable Integer id){
+        return wmMaterialService.deleteById(id);
+    }
 }
