@@ -27,4 +27,14 @@ public class WmMaterialController {
     public ResponseResult del_picture(@PathVariable Integer id){
         return wmMaterialService.deleteById(id);
     }
+
+    @GetMapping("/cancel_collect/{id}")
+    public ResponseResult cancel_collect(@PathVariable Integer id){
+        return wmMaterialService.collectOrCancelCollect(id);
+    }
+
+    @GetMapping("/collect/{id}")
+    public ResponseResult collect(@PathVariable Integer id){
+        return wmMaterialService.collectOrCancelCollect(id);
+    }
 }

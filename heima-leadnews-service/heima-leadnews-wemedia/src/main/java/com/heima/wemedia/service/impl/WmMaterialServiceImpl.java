@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.heima.common.constants.WemediaConstants;
 import com.heima.file.service.FileStorageService;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
@@ -123,6 +124,30 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
             return ResponseResult.errorResult(501, "该素材已在图文中引用, 无法删除");
         }
         removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    /**
+     * 图片收藏与取消
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult collectOrCancelCollect(Integer id) {
+        if (id == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        WmMaterial material = getById(id);
+        if (material == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        Short isCollection = material.getIsCollection();
+        if (isCollection.equals(WemediaConstants.CANCEL_COLLECT_MATERIAL)){
+            material.setIsCollection(WemediaConstants.COLLECT_MATERIAL);
+        }else {
+            material.setIsCollection(WemediaConstants.CANCEL_COLLECT_MATERIAL);
+        }
+        updateById(material);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
