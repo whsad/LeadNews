@@ -11,4 +11,10 @@ public interface WmNewsService extends IService<WmNews> {
 
     ResponseResult submit(WmNewsDto dto);
 
+    /**
+     * 查看详情
+     * @param id
+     * @return
+     */
+    ResponseResult searchOne(Integer id);
 }
