@@ -178,6 +178,33 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewMapper, WmNews> implemen
     }
 
     /**
+     * 文章上下架
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult downOrUp(WmNewsDto dto) {
+        if (dto.getId() == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "文章id不可缺少");
+        }
+        WmNews wmNews = getById(dto.getId());
+        if (wmNews == null){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST, "文章不存在");
+        }
+        if (wmNews.getStatus() == WmNews.Status.PUBLISHED.getCode()){
+            if (wmNews.getEnable().equals(WemediaConstants.WN_NEWS_DOWN)){
+                wmNews.setEnable(WemediaConstants.WN_NEWS_UP);
+            }else {
+                wmNews.setEnable(WemediaConstants.WN_NEWS_DOWN);
+            }
+            updateById(wmNews);
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        }
+        return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "当前文章不是发布状态, 不能上下架");
+    }
+
+
+    /**
      * 第一个功能：如果当前封面类型为自动，则设置封面类型的数据
      * 匹配规则：
      * 1.如果内容图片大于等于1，小于3 单图 type1

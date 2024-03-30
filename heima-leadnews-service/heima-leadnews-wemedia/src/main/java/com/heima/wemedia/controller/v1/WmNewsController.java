@@ -3,6 +3,7 @@ package com.heima.wemedia.controller.v1;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.dtos.WmNewsDto;
 import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
+import com.heima.model.wemedia.pojos.WmNews;
 import com.heima.wemedia.service.WmNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +34,10 @@ public class WmNewsController {
     @GetMapping("/del_news/{id}")
     public ResponseResult delNews(@PathVariable Integer id){
         return wmNewsService.delNews(id);
+    }
+
+    @PostMapping("/down_or_up")
+    public ResponseResult downOrUp(@RequestBody WmNewsDto dto){
+        return wmNewsService.downOrUp(dto);
     }
 }
