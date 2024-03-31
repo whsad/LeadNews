@@ -40,4 +40,5 @@ public class WmNewsController {
     public ResponseResult downOrUp(@RequestBody WmNewsDto dto){
         return wmNewsService.downOrUp(dto);
     }
+
 }

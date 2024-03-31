@@ -24,7 +24,6 @@ public class ApArticle implements Serializable {
     @TableId(value = "id",type = IdType.ID_WORKER)
     private Long id;
 
-
     /**
      * 标题
      */
