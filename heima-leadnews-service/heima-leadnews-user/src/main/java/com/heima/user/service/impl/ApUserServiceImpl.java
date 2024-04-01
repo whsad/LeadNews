@@ -2,6 +2,7 @@ package com.heima.user.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.heima.apis.article.IArticleClient;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.user.dtos.LoginDto;
@@ -10,6 +11,7 @@ import com.heima.user.mapper.ApUserMapper;
 import com.heima.user.service.ApUserService;
 import com.heima.utils.common.AppJwtUtil;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -18,10 +20,19 @@ import java.util.Map;
 
 @Service
 public class ApUserServiceImpl extends ServiceImpl<ApUserMapper, ApUser> implements ApUserService{
+
+
     @Override
     public ResponseResult login(LoginDto dto) {
         //1.正常登录（手机号+密码）
         if (!StringUtils.isBlank(dto.getPhone()) && !StringUtils.isBlank(dto.getPassword())){
+
+            try {
+                Thread.sleep(3000);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             //1.查询用户
             ApUser apUser = getOne(Wrappers.<ApUser>lambdaQuery().eq(ApUser::getPhone, dto.getPhone()));
             if (apUser == null){

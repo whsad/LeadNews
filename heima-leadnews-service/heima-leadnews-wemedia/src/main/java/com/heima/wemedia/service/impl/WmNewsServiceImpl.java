@@ -2,12 +2,10 @@ package com.heima.wemedia.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.injector.methods.SelectOne;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Maps;
 import com.heima.common.constants.WemediaConstants;
 import com.heima.common.exception.CustomException;
 import com.heima.model.common.dtos.PageResponseResult;
@@ -21,14 +19,14 @@ import com.heima.model.wemedia.pojos.WmNewsMaterial;
 import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.utils.thread.WmThreadLocalUtil;
 import com.heima.wemedia.mapper.WmMaterialMapper;
-import com.heima.wemedia.mapper.WmNewMapper;
+import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
+import com.heima.wemedia.service.WmNewsAutoScanService;
 import com.heima.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.embedded.netty.NettyWebServer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
-public class WmNewsServiceImpl extends ServiceImpl<WmNewMapper, WmNews> implements WmNewsService {
+public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> implements WmNewsService {
 
     @Autowired
     private WmNewsMaterialMapper wmNewsMaterialMapper;
@@ -49,6 +47,14 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewMapper, WmNews> implemen
     @Autowired
     private WmMaterialMapper wmMaterialMapper;
 
+    @Autowired
+    private WmNewsAutoScanService wmNewsAutoScanService;
+
+    /**
+     * 查询文章
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult findAll(WmNewsPageReqDto dto) {
         //1.检查参数
@@ -96,6 +102,11 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewMapper, WmNews> implemen
         return responseResult;
     }
 
+    /**
+     * 发布修改文章或保存为草稿
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult submit(WmNewsDto dto) {
         //0.条件判断
@@ -132,6 +143,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewMapper, WmNews> implemen
         //4.不是草稿, 保存文章封面图片与素材的关系, 如果当前布局是自动, 需要匹配封面图片
         saveRelativeInfoForCover(dto, wmNews, materials);
 
+        //审核文章
+        wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 

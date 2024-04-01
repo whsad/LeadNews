@@ -2,6 +2,7 @@ package com.heima.article.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.heima.apis.article.IArticleClient;
 import com.heima.article.mapper.ApArticleConfigMapper;
 import com.heima.article.mapper.ApArticleContentMapper;
 import com.heima.article.mapper.ApArticleMapper;
@@ -18,11 +19,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle> implements ApArticleService {
 
     //单页最大加载的数字
@@ -79,6 +82,12 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
      */
     @Override
     public ResponseResult saveArticle(ArticleDto dto) {
+        //
+        //try {
+        //    Thread.sleep(3000);
+        //} catch (InterruptedException e) {
+        //    e.printStackTrace();
+        //}
         if(dto == null){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }

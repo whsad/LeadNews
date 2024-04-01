@@ -24,8 +24,8 @@ public class ApArticleConfig implements Serializable {
         this.articleId = articleId;
         this.isComment = true;
         this.isForward = true;
-        this.isDown = true;
-        this.isDelete = true;
+        this.isDown = false;
+        this.isDelete = false;
     }
 
     @TableId(value = "id",type = IdType.ID_WORKER)

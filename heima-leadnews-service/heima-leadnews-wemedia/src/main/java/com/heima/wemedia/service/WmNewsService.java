@@ -7,8 +7,18 @@ import com.heima.model.wemedia.dtos.WmNewsPageReqDto;
 import com.heima.model.wemedia.pojos.WmNews;
 
 public interface WmNewsService extends IService<WmNews> {
+    /**
+     * 查询文章
+     * @param dto
+     * @return
+     */
     ResponseResult findAll(WmNewsPageReqDto dto);
 
+    /**
+     * 发布修改文章或保存为草稿
+     * @param dto
+     * @return
+     */
     ResponseResult submit(WmNewsDto dto);
 
     /**

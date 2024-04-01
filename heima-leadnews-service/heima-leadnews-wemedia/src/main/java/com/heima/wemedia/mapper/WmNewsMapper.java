@@ -5,5 +5,5 @@ import com.heima.model.wemedia.pojos.WmNews;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface WmNewMapper extends BaseMapper<WmNews> {
+public interface WmNewsMapper extends BaseMapper<WmNews> {
 }
