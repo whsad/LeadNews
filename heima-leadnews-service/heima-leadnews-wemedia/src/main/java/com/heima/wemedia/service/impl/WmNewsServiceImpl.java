@@ -145,6 +145,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
         //审核文章
         wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
+
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
