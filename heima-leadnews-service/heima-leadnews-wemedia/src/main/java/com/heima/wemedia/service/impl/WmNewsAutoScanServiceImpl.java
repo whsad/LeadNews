@@ -3,8 +3,11 @@ package com.heima.wemedia.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.heima.apis.article.IArticleClient;
+import com.heima.common.tess4j.Tess4jClient;
+import com.heima.file.service.FileStorageService;
 import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmChannel;
 import com.heima.model.wemedia.pojos.WmNews;
 import com.heima.model.wemedia.pojos.WmSensitive;
@@ -23,6 +26,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +50,13 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
     private WmUserMapper wmUserMapper;
 
     @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
     private WmSensitiveMapper wmSensitiveMapper;
+
+    @Autowired
+    private Tess4jClient tess4jClient;
 
     /**
      * 自媒体文章审核
@@ -66,9 +78,14 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
             //审核成功. 保存app端相关文章
             ResponseResult responseResult = saveAppArticle(wmNews);
+
             //自管理的敏感词过滤
-            boolean isSensitive = handleSensitiveScan((String) textAndImages.get("content"), wmNews);
+            boolean isSensitive = handleSensitiveScan(textAndImages.get("content").toString(), wmNews);
             if (!isSensitive) return;
+
+            //3.审核图片
+            boolean isImageScan = handleImageScan((List<String>) textAndImages.get("images"), wmNews);
+            if (!isImageScan) return;
 
             if (!responseResult.getCode().equals(200)) {
                 throw new RuntimeException("WmNewsAutoScanServiceImpl-文章审核, 保存app端相关文章失败");
@@ -77,6 +94,47 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             wmNews.setArticleId((Long) responseResult.getData());
             updateWmNews(wmNews, (short) 9, "审核成功");
         }
+    }
+
+    /**
+     * 审核图片
+     * @param images
+     * @param wmNews
+     * @return
+     */
+    private boolean handleImageScan(List<String> images, WmNews wmNews) {
+        boolean flag = true;
+
+        if(images == null || images.size() == 0){
+            return flag;
+        }
+
+        //下载图片 minIO
+        //图片去重
+        images = images.stream().distinct().collect(Collectors.toList());
+
+        List<byte[]> imageList = new ArrayList<>();
+
+        try {
+            for (String image : images) {
+                byte[] bytes = fileStorageService.downLoadFile(image);
+
+                //图片识别审核
+                ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+                BufferedImage imageFile = ImageIO.read(in);
+                //识别图片的文字
+                String result = tess4jClient.doOCR(imageFile);
+
+                //审核是否包含自管理的敏感词
+                boolean isSensitive = handleSensitiveScan(result, wmNews);
+                if (!isSensitive) return isSensitive;
+
+                imageList.add(bytes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return flag;
     }
 
     /**

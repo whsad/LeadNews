@@ -12,3 +12,6 @@ server:
   tomcat:
     uri-encoding: utf-8
 
+tess4j:
+  data-path: D:\ITEMS\LEADNEWS\tessdata
+  language: chi_sim
