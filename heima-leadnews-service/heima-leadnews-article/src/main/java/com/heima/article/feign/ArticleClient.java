@@ -1,4 +1,4 @@
-package com.heima.article.com.heima.article.feign;
+package com.heima.article.feign;
 
 import com.heima.apis.article.IArticleClient;
 import com.heima.article.service.ApArticleService;

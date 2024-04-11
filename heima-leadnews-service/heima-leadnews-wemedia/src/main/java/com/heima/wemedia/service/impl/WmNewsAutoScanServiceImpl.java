@@ -7,7 +7,6 @@ import com.heima.common.tess4j.Tess4jClient;
 import com.heima.file.service.FileStorageService;
 import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.common.dtos.ResponseResult;
-import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmChannel;
 import com.heima.model.wemedia.pojos.WmNews;
 import com.heima.model.wemedia.pojos.WmSensitive;
@@ -76,9 +75,6 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             //从内容中提取纯文本内容和图片
             Map<String, Object> textAndImages = handleTextAndImages(wmNews);
 
-            //审核成功. 保存app端相关文章
-            ResponseResult responseResult = saveAppArticle(wmNews);
-
             //自管理的敏感词过滤
             boolean isSensitive = handleSensitiveScan(textAndImages.get("content").toString(), wmNews);
             if (!isSensitive) return;
@@ -87,9 +83,13 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             boolean isImageScan = handleImageScan((List<String>) textAndImages.get("images"), wmNews);
             if (!isImageScan) return;
 
+            //审核成功. 保存app端相关文章
+            ResponseResult responseResult = saveAppArticle(wmNews);
+
             if (!responseResult.getCode().equals(200)) {
                 throw new RuntimeException("WmNewsAutoScanServiceImpl-文章审核, 保存app端相关文章失败");
             }
+
             //回填article_id
             wmNews.setArticleId((Long) responseResult.getData());
             updateWmNews(wmNews, (short) 9, "审核成功");

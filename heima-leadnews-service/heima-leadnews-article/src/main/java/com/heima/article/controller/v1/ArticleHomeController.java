@@ -1,7 +1,5 @@
 package com.heima.article.controller.v1;
 
-import com.heima.apis.article.IArticleClient;
-import com.heima.article.com.heima.article.feign.ArticleClient;
 import com.heima.article.service.ApArticleService;
 import com.heima.common.constants.ArticleConstants;
 import com.heima.model.article.dtos.ArticleHomeDto;

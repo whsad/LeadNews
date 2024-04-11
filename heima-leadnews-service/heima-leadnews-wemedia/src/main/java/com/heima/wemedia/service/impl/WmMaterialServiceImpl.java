@@ -87,6 +87,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
 
         IPage page =new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<WmMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+
         if (dto.getIsCollection() != null && dto.getIsCollection() == 1){
             lambdaQueryWrapper.eq(WmMaterial::getIsCollection, dto.getIsCollection());
         }
@@ -134,10 +135,13 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
      */
     @Override
     public ResponseResult collectOrCancelCollect(Integer id) {
+        //1.判断id是否存在
         if (id == null){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
+        //2.获取文章
         WmMaterial material = getById(id);
+        //3.校验文章
         if (material == null){
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
