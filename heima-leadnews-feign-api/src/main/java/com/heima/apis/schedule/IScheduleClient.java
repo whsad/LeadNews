@@ -1,4 +1,4 @@
-package com.heima.apis.article;
+package com.heima.apis.schedule;
 
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.schedule.dtos.Task;

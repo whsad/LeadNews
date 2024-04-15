@@ -1,7 +1,7 @@
 package com.heima.wemedia.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.heima.apis.article.IScheduleClient;
+import com.heima.apis.schedule.IScheduleClient;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.TaskTypeEnum;
 import com.heima.model.schedule.dtos.Task;
@@ -37,7 +37,7 @@ public class WmNewsTaskServiceImpl implements WmNewsTaskService {
     @Async
     public void addNewsToTask(Integer id, Date publishTime) {
 
-        log.info("添加任务到延迟服务中---begin");
+        //log.info("添加任务到延迟服务中---begin");
 
         Task task = new Task();
         task.setExecuteTime(publishTime.getTime());
@@ -49,7 +49,7 @@ public class WmNewsTaskServiceImpl implements WmNewsTaskService {
 
         scheduleclien.addTask(task);
 
-        log.info("添加任务到延迟队列---end");
+        //log.info("添加任务到延迟队列---end");
     }
 
     /**
@@ -59,7 +59,7 @@ public class WmNewsTaskServiceImpl implements WmNewsTaskService {
     @Override
     @SneakyThrows
     public void scanNewsByTask() {
-        log.info("文章审核--消费任务执行--begin");
+        //log.info("文章审核--消费任务执行--begin");
 
         ResponseResult responseResult = scheduleclien.poll
                 (TaskTypeEnum.NEWS_SCAN_TIME.getTaskType(),
@@ -73,7 +73,7 @@ public class WmNewsTaskServiceImpl implements WmNewsTaskService {
             wmNewsAutoScanService.autoScanWmNews(wmnews.getId());
         }
 
-        log.info("文章审核--消费任务执行--end");
+        //log.info("文章审核--消费任务执行--end");
     }
 
 }

@@ -6,6 +6,8 @@ import com.heima.model.article.dtos.ArticleHomeDto;
 import com.heima.model.article.pojos.ApArticle;
 import com.heima.model.common.dtos.ResponseResult;
 
+import java.util.Map;
+
 public interface ApArticleService extends IService<ApArticle> {
 
     /**
@@ -22,4 +24,6 @@ public interface ApArticleService extends IService<ApArticle> {
      * @return
      */
     ResponseResult saveArticle(ArticleDto dto);
+
+
 }

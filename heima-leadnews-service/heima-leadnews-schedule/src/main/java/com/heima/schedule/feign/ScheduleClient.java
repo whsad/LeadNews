@@ -1,6 +1,6 @@
 package com.heima.schedule.feign;
 
-import com.heima.apis.article.IScheduleClient;
+import com.heima.apis.schedule.IScheduleClient;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.schedule.dtos.Task;
 import com.heima.schedule.service.TaskService;

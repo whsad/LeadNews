@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -130,6 +131,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
 
         return ResponseResult.okResult(apArticle.getId());
     }
+
+
 }
 
 
