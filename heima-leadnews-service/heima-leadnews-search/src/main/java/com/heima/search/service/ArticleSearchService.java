@@ -12,4 +12,6 @@ public interface ArticleSearchService {
      * Es文章分页查询
      */
     ResponseResult search(UserSearchDto userSearchDto) throws IOException;
+
+
 }
