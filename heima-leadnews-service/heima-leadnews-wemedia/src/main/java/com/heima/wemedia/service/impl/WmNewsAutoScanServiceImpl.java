@@ -17,6 +17,7 @@ import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.mapper.WmUserMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -64,6 +65,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
      */
     @Override
     @Async//异步调用
+    @GlobalTransactional
     public void autoScanWmNews(Integer id) {
         //1.查询自媒体文章
         WmNews wmNews = wmNewsMapper.selectById(id);
@@ -89,7 +91,6 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             if (!responseResult.getCode().equals(200)) {
                 throw new RuntimeException("WmNewsAutoScanServiceImpl-文章审核, 保存app端相关文章失败");
             }
-
             //回填article_id
             wmNews.setArticleId((Long) responseResult.getData());
             updateWmNews(wmNews, (short) 9, "审核成功");
@@ -98,6 +99,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
     /**
      * 审核图片
+     *
      * @param images
      * @param wmNews
      * @return
@@ -105,7 +107,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
     private boolean handleImageScan(List<String> images, WmNews wmNews) {
         boolean flag = true;
 
-        if(images == null || images.size() == 0){
+        if (images == null || images.size() == 0) {
             return flag;
         }
 
@@ -131,7 +133,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
                 imageList.add(bytes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return flag;
@@ -166,6 +168,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
     /**
      * 修改文章内容
+     *
      * @param wmNews
      * @param status
      * @param reason

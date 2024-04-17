@@ -16,6 +16,7 @@ import com.heima.model.article.pojos.ApArticleConfig;
 import com.heima.model.article.pojos.ApArticleContent;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,13 +86,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
      * @return
      */
     @Override
+    //@GlobalTransactional
     public ResponseResult saveArticle(ArticleDto dto) {
-
-        //try {
-        //    Thread.sleep(3000);
-        //} catch (InterruptedException e) {
-        //    e.printStackTrace();
-        //}
         if(dto == null){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
@@ -121,7 +117,7 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
             //2.保存文章内容
             ApArticleContent apArticleContent = apArticleContentMapper
                     .selectOne(Wrappers.<ApArticleContent>lambdaQuery()
-                    .eq(ApArticleContent::getArticleId, dto.getId()));
+                            .eq(ApArticleContent::getArticleId, dto.getId()));
             apArticleContent.setContent(dto.getContent());
             apArticleContentMapper.updateById(apArticleContent);
         }
