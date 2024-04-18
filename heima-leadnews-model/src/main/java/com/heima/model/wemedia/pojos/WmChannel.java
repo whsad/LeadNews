@@ -31,7 +31,7 @@ public class WmChannel implements Serializable {
     @TableField("name")
     private String name;
 
-    /**
+    /**s
      * 频道描述
      */
     @TableField("description")

@@ -41,6 +41,9 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private CacheService cacheService;
 
+    /**
+     * 未来数据定时刷新
+     */
     @Scheduled(cron = "0 */1 * * * ?")
     public void refresh(){
         String token = cacheService.tryLock("FUTURE_TASK_SYNC", 1000 * 30);
