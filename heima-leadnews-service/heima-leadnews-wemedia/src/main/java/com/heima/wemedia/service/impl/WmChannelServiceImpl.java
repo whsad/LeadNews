@@ -18,12 +18,14 @@ import com.heima.wemedia.service.WmNewsService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.regex.Pattern;
 
 
 @Service
+@Transactional
 public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel> implements WmChannelService {
 
     @Autowired
@@ -51,11 +53,12 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         //2.分页查询
         Page page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<WmChannel> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-
+        //模糊搜索
         if (StringUtils.isNotBlank(dto.getName())){
             lambdaQueryWrapper.like(WmChannel::getName, dto.getName());
         }
-
+        //按照创建时间倒序排序
+        lambdaQueryWrapper.orderByDesc(WmChannel::getCreatedTime);
         page = page(page, lambdaQueryWrapper);
         //结果返回
         PageResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
