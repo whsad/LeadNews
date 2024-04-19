@@ -25,7 +25,7 @@ public interface IScheduleClient {
      * @return              取消结果
      */
     @GetMapping("/api/v1/task/{taskId}")
-    public ResponseResult cancelTask(@PathVariable long taskId);
+    public ResponseResult cancelTask(@PathVariable("taskId") long taskId);
 
     /**
      * 按照类型和优先级来拉取任务
@@ -34,5 +34,5 @@ public interface IScheduleClient {
      * @return
      */
     @GetMapping("/api/v1/task/{type}/{priority}")
-    public ResponseResult poll(@PathVariable int type,@PathVariable int priority);
+    public ResponseResult poll(@PathVariable("type") int type,@PathVariable("priority")  int priority);
 }
