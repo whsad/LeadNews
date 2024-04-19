@@ -13,26 +13,51 @@ public class WmMaterialController {
     @Autowired
     private WmMaterialService wmMaterialService;
 
+    /**
+     * 上传图片
+     * @param multipartFile
+     * @return
+     */
     @PostMapping("/upload_picture")
     public ResponseResult upload_picture(@RequestBody MultipartFile multipartFile){
         return wmMaterialService.upload_picture(multipartFile);
     }
 
+    /**
+     * 查看图片
+     * @param dto
+     * @return
+     */
     @PostMapping("/list")
-    public ResponseResult search_list(WmMaterialDto dto){
+    public ResponseResult search_list(@RequestBody WmMaterialDto dto){
         return wmMaterialService.search_list(dto);
     }
 
+    /**
+     * 删除图片
+     * @param id
+     * @return
+     */
     @GetMapping("/del_picture/{id}")
     public ResponseResult del_picture(@PathVariable Integer id){
         return wmMaterialService.deleteById(id);
     }
 
+    /**
+     * 图片取消收藏
+     * @param id
+     * @return
+     */
     @GetMapping("/cancel_collect/{id}")
     public ResponseResult cancel_collect(@PathVariable Integer id){
         return wmMaterialService.collectOrCancelCollect(id);
     }
 
+    /**
+     * 图片收藏
+     * @param id
+     * @return
+     */
     @GetMapping("/collect/{id}")
     public ResponseResult collect(@PathVariable Integer id){
         return wmMaterialService.collectOrCancelCollect(id);

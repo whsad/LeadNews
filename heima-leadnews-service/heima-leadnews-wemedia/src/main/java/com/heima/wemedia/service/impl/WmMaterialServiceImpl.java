@@ -43,7 +43,11 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     @Autowired
     private WmNewsMaterialMapper wmNewsMaterialMapper;
 
-
+    /**
+     * 上传图片
+     * @param multipartFile
+     * @return
+     */
     @Override
     public ResponseResult upload_picture(MultipartFile multipartFile) {
         //1.检查参数
@@ -75,6 +79,11 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         return ResponseResult.okResult(wmMaterial);
     }
 
+    /**
+     * 查看图片
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult search_list(WmMaterialDto dto) {
         dto.checkParam();
@@ -85,15 +94,16 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
             return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
         }
 
-        IPage page =new Page(dto.getPage(), dto.getSize());
+        IPage page = new Page(dto.getPage(), dto.getSize());
+
         LambdaQueryWrapper<WmMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        //按照用户查询
+        lambdaQueryWrapper.eq(WmMaterial::getUserId, user.getId());
 
         if (dto.getIsCollection() != null && dto.getIsCollection() == 1){
             lambdaQueryWrapper.eq(WmMaterial::getIsCollection, dto.getIsCollection());
         }
-
-        //按照用户查询
-        lambdaQueryWrapper.eq(WmMaterial::getUserId, user.getId());
 
         //按照时间查询
         lambdaQueryWrapper.orderByDesc(WmMaterial::getCreatedTime);
