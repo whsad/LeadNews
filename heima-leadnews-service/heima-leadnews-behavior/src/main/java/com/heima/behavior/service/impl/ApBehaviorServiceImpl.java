@@ -4,17 +4,20 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.heima.behavior.service.ApBehaviorService;
 import com.heima.common.constants.BehaviorConstants;
+import com.heima.common.constants.HotArticleConstants;
 import com.heima.common.redis.CacheService;
 import com.heima.model.behavior.dtos.LikesBehaviorDto;
 import com.heima.model.behavior.dtos.ReadBehaviorDto;
 import com.heima.model.behavior.dtos.UnLikesBehaviorDto;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
+import com.heima.model.mess.UpdateArticleMess;
 import com.heima.model.user.pojos.ApUser;
 import com.heima.utils.thread.AppThreadLocalUtil;
 import jdk.nashorn.internal.ir.ReturnNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sun.nio.cs.ThreadLocalCoders;
@@ -27,9 +30,11 @@ public class ApBehaviorServiceImpl implements ApBehaviorService {
     @Autowired
     private CacheService cacheService;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
     /**
      * 点赞
-     *
      * @param dto
      */
     @Override
@@ -43,6 +48,11 @@ public class ApBehaviorServiceImpl implements ApBehaviorService {
         if (user == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
         }
+
+        UpdateArticleMess mess = new UpdateArticleMess();
+        mess.setArticleId(dto.getArticleId());
+        mess.setType(UpdateArticleMess.UpdateArticleType.LIKES);
+
         //3.点赞
         if (dto.getOperation() == 0) {
             //校验是否已点赞
@@ -53,11 +63,17 @@ public class ApBehaviorServiceImpl implements ApBehaviorService {
             log.info("点赞-保存当前key: {}, {}, {}", dto.getArticleId(), user.getId(), JSON.toJSONString(dto));
             //保存到redis
             cacheService.hPut(BehaviorConstants.LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString(), JSON.toJSONString(dto));
+            mess.setAdd(1);
         } else {
             //取消点赞
             log.info("点赞-删除当前key: {}, {}, {}", dto.getArticleId(), user.getId(), JSON.toJSONString(dto));
             cacheService.hDelete(BehaviorConstants.LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString());
+            mess.setAdd(-1);
         }
+
+        //发送消息
+        kafkaTemplate.send(HotArticleConstants.HOT_ARTICLE_SCORE_TOPIC, JSON.toJSONString(mess));
+
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
@@ -86,6 +102,7 @@ public class ApBehaviorServiceImpl implements ApBehaviorService {
         if (dto == null || dto.getArticleId() == null || dto.getCount() == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
+
         //判断用户
         ApUser user = AppThreadLocalUtil.getUser();
         if (user == null) {
@@ -100,6 +117,14 @@ public class ApBehaviorServiceImpl implements ApBehaviorService {
         //保存阅读次数
         log.info("阅读-保存当前key:{},{},{}", dto.getArticleId(), user.getId(), JSON.toJSONString(dto));
         cacheService.hPut(BehaviorConstants.READ_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString(), JSON.toJSONString(dto));
+
+        //发送消息, 数据聚合
+        UpdateArticleMess mess = new UpdateArticleMess();
+        mess.setArticleId(dto.getArticleId());
+        mess.setType(UpdateArticleMess.UpdateArticleType.VIEWS);
+        mess.setAdd(1);
+        kafkaTemplate.send(HotArticleConstants.HOT_ARTICLE_SCORE_TOPIC, JSON.toJSONString(mess));
+
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 

@@ -31,18 +31,22 @@ public class ProducerQuickStart {
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(prop);
 
         //3.发送消息
-        ProducerRecord<String,String> producerRecord = new ProducerRecord<String, String>("itheima-topic", "hello kafka");
+        for (int i = 0; i < 5; i++) {
+            ProducerRecord<String,String> producerRecord = new ProducerRecord<String, String>("itcast-topic-input", "hello kafka");
+            producer.send(producerRecord);
+        }
+
         //同步发送消息
 /*        RecordMetadata recordMetadata = producer.send(producerRecord).get();
         System.out.println(recordMetadata.offset());*/
 
         //异步发送消息
-        producer.send(producerRecord, (metadata, exception) -> {
+/*        producer.send(producerRecord, (metadata, exception) -> {
             if (exception != null){
                 System.out.println("记录异常信息到日志表中");
             }
             System.out.println(metadata.offset());
-        });
+        });*/
 
         //4.关闭消息通道
         producer.close();

@@ -26,3 +26,4 @@ public class AppTokenInterceptor implements HandlerInterceptor {
         AppThreadLocalUtil.clear();
     }
 }
+fatkun

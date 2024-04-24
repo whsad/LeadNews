@@ -35,7 +35,7 @@ public class ConsumerQuickStart {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
 
         //3.订阅主题
-        consumer.subscribe(Collections.singletonList("itheima-topic"));
+        consumer.subscribe(Collections.singletonList("itcast-topic-out"));
 
         //同步和异步组合提交偏移量
         try {
