@@ -70,7 +70,7 @@ public class ApCommentServiceImpl implements ApCommentService {
         if (!checkParam(dto.getArticleId())){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "该文章不能评论");
         }
-        //判断文章内容
+        //判断评论内容
         if (dto.getContent().length() > 140){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "评论内容不能大于140位字符");
         }
@@ -98,7 +98,7 @@ public class ApCommentServiceImpl implements ApCommentService {
         apComment.setCreatedTime(new Date());
         apComment.setEntryId(dto.getArticleId());
         apComment.setImage(dbUser.getImage());
-        apComment.setAuthorName(user.getName());
+        apComment.setAuthorName(dbUser.getName());
         apComment.setLikes(0);
         apComment.setReply(0);
         apComment.setType((short) 0);
@@ -129,7 +129,7 @@ public class ApCommentServiceImpl implements ApCommentService {
 
         //2.加载数据
         Query query = Query.query(Criteria.where("entryId").is(dto.getArticleId()).and("createdTime").lt(dto.getMinDate()));
-        query.with(Sort.by(Sort.DEFAULT_DIRECTION, "createdTime"));
+        query.with(Sort.by(Sort.Direction.DESC, "createdTime")).limit(10);
         List<ApComment> apCommentList = mongoTemplate.find(query, ApComment.class);
 
         //3.封装数据返回
@@ -160,7 +160,7 @@ public class ApCommentServiceImpl implements ApCommentService {
             resultList.add(commentVo);
         });
 
-        return ResponseResult.okResult(apCommentList);
+        return ResponseResult.okResult(resultList);
     }
 
     /**
@@ -171,7 +171,7 @@ public class ApCommentServiceImpl implements ApCommentService {
     @Override
     public ResponseResult like(CommentLikeDto dto) {
         //1.校验参数
-        if (dto == null || dto.getOperation() == null || dto.getCommentId() == null){
+        if (dto == null || dto.getOperation() == null || StringUtils.isBlank(dto.getCommentId())){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
         //2.校验登录
@@ -189,12 +189,11 @@ public class ApCommentServiceImpl implements ApCommentService {
 
             //保存评论点赞数据
             ApCommentLike apCommentLike = new ApCommentLike();
-            apCommentLike.setCommentId(dto.getCommentId());
+            apCommentLike.setCommentId(apComment.getId());
             apCommentLike.setAuthorId(user.getId());
-            apCommentLike.setOperation(dto.getOperation());
             mongoTemplate.save(apCommentLike);
         }else {
-            //更新评论点赞数量
+            //更新评论点赞数据
             int tmp = apComment.getLikes() - 1;
             tmp = tmp < 1 ? 0 : tmp;
             apComment.setLikes(tmp);
@@ -239,7 +238,6 @@ public class ApCommentServiceImpl implements ApCommentService {
         boolean flag = true;
 
         //获取所有的敏感词
-        //List<WmSensitive> wmSensitives = wmSensitiveMapper.selectList(Wrappers.<WmSensitive>lambdaQuery().select(WmSensitive::getSensitives));
         List<WmSensitive> wmSensitives = wemediaClient.selectSensitives();
 
         List<String> sensitiveList = wmSensitives.stream().map(WmSensitive::getSensitives).collect(Collectors.toList());
