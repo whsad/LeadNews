@@ -5,6 +5,8 @@ import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.common.dtos.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -13,4 +15,7 @@ public interface IArticleClient {
 
     @PostMapping("/article/v1/article/save")
     public ResponseResult saveArticle(@RequestBody ArticleDto dto);
+
+    @GetMapping("/article/v1/article/findArticleConfigByArticleId/{articleId}")
+    ResponseResult findArticleConfigByArticleId(@PathVariable("articleId") Long articleId);
 }

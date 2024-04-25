@@ -16,4 +16,9 @@ public class IArticleClientFallback implements IArticleClient {
     public ResponseResult saveArticle(ArticleDto dto) {
         return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR, "获取数据失败");
     }
+
+    @Override
+    public ResponseResult findArticleConfigByArticleId(Long articleId) {
+        return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR, "获取数据失败");
+    }
 }

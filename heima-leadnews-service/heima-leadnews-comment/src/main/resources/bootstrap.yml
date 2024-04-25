@@ -1,8 +1,8 @@
 server:
-  port: 51810
+  port: 51811
 spring:
   application:
-    name: leadnews-admin
+    name: leadnews-comment
   cloud:
     nacos:
       discovery:

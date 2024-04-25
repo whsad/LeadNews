@@ -272,7 +272,6 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
             //缓存到redis
             hotArticleVoList = hotArticleVoList.stream().sorted(Comparator.comparing(HotArticleVo::getScore).reversed()).collect(Collectors.toList());
             cacheService.set(s, JSON.toJSONString(hotArticleVoList));
-
         }
     }
 
